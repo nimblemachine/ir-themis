@@ -16,10 +16,6 @@
 --  You should have received a copy of the GNU Lesser General Public License
 --  along with this program.  If not, see <http://www.gnu.org/licenses/>
 
---
--- PostgreSQL database dump
---
-
 SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
@@ -233,6 +229,21 @@ $$
 
 
 --
+-- Name: clear_stopword(); Type: FUNCTION; Schema: etvsm; Owner: -
+--
+
+CREATE FUNCTION clear_stopword() RETURNS integer
+    AS $$
+BEGIN
+  DELETE FROM etvsm.stopword;
+
+  RETURN 1;
+END;
+$$
+    LANGUAGE plpgsql STRICT;
+
+
+--
 -- Name: del_document_by_id(integer); Type: FUNCTION; Schema: etvsm; Owner: -
 --
 
@@ -265,6 +276,25 @@ BEGIN
 
   RETURN did;
 END
+$_$
+    LANGUAGE plpgsql STRICT;
+
+
+--
+-- Name: del_stopword(character varying); Type: FUNCTION; Schema: etvsm; Owner: -
+--
+
+CREATE FUNCTION del_stopword(character varying) RETURNS integer
+    AS $_$
+DECLARE
+  sw ALIAS FOR $1;
+  wid INTEGER;
+BEGIN
+  wid := themis.add_word(sw);
+  DELETE FROM etvsm.stopword WHERE word_id = wid;
+
+  RETURN wid;
+END;
 $_$
     LANGUAGE plpgsql STRICT;
 
@@ -444,6 +474,31 @@ BEGIN
     result.sim = occ.sim;
     RETURN NEXT result;
   END LOOP;
+END;
+$_$
+    LANGUAGE plpgsql STRICT;
+
+
+--
+-- Name: set_config(character varying, character varying); Type: FUNCTION; Schema: etvsm; Owner: -
+--
+
+CREATE FUNCTION set_config(character varying, character varying) RETURNS integer
+    AS $_$
+DECLARE
+  param ALIAS FOR $1;
+  val ALIAS FOR $2;
+  p VARCHAR;
+BEGIN
+  SELECT INTO p name FROM etvsm.config WHERE name=param;
+
+  IF p IS NULL THEN
+    INSERT INTO etvsm.config (name,value) VALUES (param,val);
+  ELSE
+    UPDATE etvsm.config SET value=val WHERE name=param;
+  END IF;
+
+  RETURN 1;
 END;
 $_$
     LANGUAGE plpgsql STRICT;

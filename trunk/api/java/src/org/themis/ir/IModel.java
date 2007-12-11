@@ -52,13 +52,29 @@ public interface IModel
 	public abstract int addQuery(String doc) throws SQLException;
 	
 	/**
-	 * Add stopword to consider in Information Retrieval model.
+	 * Add a stopword to consider in Information Retrieval model.
 	 * 
 	 * @param word Stopword to add
 	 * @return Stopword Themis unique ID
 	 * @throws SQLException
 	 */
 	public abstract int addStopword(String word) throws SQLException;
+	
+	/**
+	 * Remove a stopword
+	 * 
+	 * @param word Stopword to remove
+	 * @return Stopword Themis unique ID
+	 * @throws SQLException
+	 */
+	public abstract int removeStopword(String word) throws SQLException;
+	
+	/**
+	 * Clear all stopwords
+	 * 
+	 * @throws SQLException
+	 */
+	public abstract void clearStopwords() throws SQLException;
 	
 	/**
 	 * Remove document from Information Retrieval model.
@@ -120,4 +136,12 @@ public interface IModel
 	 * @throws SQLException
 	 */
 	public abstract ResultSet searchFull(String query, int start, int n) throws SQLException;
+	
+	/**
+	 * Set model configuration parameter
+	 * @param param Parameter name
+	 * @param value Parameter value
+	 * @throws SQLException
+	 */
+	public abstract void setParameter(String param, String value) throws SQLException;
 }

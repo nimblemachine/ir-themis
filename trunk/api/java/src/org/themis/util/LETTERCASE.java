@@ -17,16 +17,24 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
-package org.themis.ir;
+package org.themis.util;
 
-import java.sql.SQLException;
-
-import org.themis.util.IRMODEL;
-
-public class eTVSM extends Model
+public enum LETTERCASE
 {
-	public eTVSM(String host, String name, String user, String pwd) throws SQLException, ClassNotFoundException
-	{
-		super(IRMODEL.eTVSM.toString(), host, name, user, pwd);
-	}
+	NONE	("none"),
+	LOWER	("lower"),
+	UPPER	("upper");
+	
+    private final String name;
+    
+    LETTERCASE(String name)
+    {
+        this.name = name;
+    }
+    
+    @Override
+    public String toString()
+    {
+    	return name;
+    }
 }

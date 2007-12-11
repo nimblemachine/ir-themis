@@ -16,10 +16,6 @@
 --  You should have received a copy of the GNU Lesser General Public License
 --  along with this program.  If not, see <http://www.gnu.org/licenses/>
 
---
--- PostgreSQL database dump
---
-
 SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
@@ -8471,6 +8467,7 @@ INSERT INTO test VALUES ('fallows', 'fallow', 'fallow');
 INSERT INTO test VALUES ('falls', 'fall', 'fall');
 INSERT INTO test VALUES ('fally', 'falli', 'falli');
 INSERT INTO test VALUES ('falorous', 'falor', 'falor');
+INSERT INTO test VALUES ('FALSE', 'fals', 'fals');
 INSERT INTO test VALUES ('falsehood', 'falsehood', 'falsehood');
 INSERT INTO test VALUES ('falsely', 'fals', 'fals');
 INSERT INTO test VALUES ('falseness', 'fals', 'fals');

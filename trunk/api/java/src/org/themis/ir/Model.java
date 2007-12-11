@@ -33,6 +33,8 @@ public class Model extends DBConnection implements IModel
 	private final String SQL_ADD_DOCUMENT;
 	private final String SQL_ADD_QUERY;
 	private final String SQL_ADD_STOPWORD;
+	private final String SQL_DEL_STOPWORD;
+	private final String SQL_CLEAR_STOPWORD;
 	private final String SQL_CLEAR;
 	private final String SQL_DEL_DOC_ID;
 	private final String SQL_DEL_DOC_URI;
@@ -40,11 +42,14 @@ public class Model extends DBConnection implements IModel
 	private final String SQL_SEARCH;
 	private final String SQL_SEARCH_INTRO;
 	private final String SQL_SEARCH_FULL;
+	private final String SQL_SET_PARAM;
 	
 	// callable statements
 	private CallableStatement addDocProc		= null;
 	private CallableStatement addQueryProc		= null;
 	private CallableStatement addStopwordProc	= null;
+	private CallableStatement delStopwordProc	= null;
+	private CallableStatement clearStopwordProc	= null;
 	private CallableStatement clearProc			= null;
 	private CallableStatement delDocIDProc		= null;
 	private CallableStatement delDocURIProc		= null;
@@ -52,6 +57,7 @@ public class Model extends DBConnection implements IModel
 	private PreparedStatement searchProc		= null;
 	private PreparedStatement searchIntroProc	= null;
 	private PreparedStatement searchFullProc	= null;
+	private CallableStatement setParamProc		= null;
 	
 	
 	public Model(String SQL_SCHEMA, String host, String name, String user, String pwd) throws SQLException, ClassNotFoundException
@@ -64,6 +70,8 @@ public class Model extends DBConnection implements IModel
 		SQL_ADD_DOCUMENT	= "{? = call "+SQL_SCHEMA+".add_document(?,?,?)}";
 		SQL_ADD_QUERY		= "{? = call "+SQL_SCHEMA+".add_query(?)}";
 		SQL_ADD_STOPWORD	= "{? = call "+SQL_SCHEMA+".add_stopword(?)}";
+		SQL_DEL_STOPWORD	= "{? = call "+SQL_SCHEMA+".del_stopword(?)}";
+		SQL_CLEAR_STOPWORD	= "{? = call "+SQL_SCHEMA+".clear_stopword()}";
 		SQL_CLEAR			= "{? = call "+SQL_SCHEMA+".clear()}";
 		SQL_DEL_DOC_ID		= "{? = call "+SQL_SCHEMA+".del_document_by_id(?)}";
 		SQL_DEL_DOC_URI		= "{? = call "+SQL_SCHEMA+".del_document_by_uri(?)}";
@@ -71,22 +79,26 @@ public class Model extends DBConnection implements IModel
 		SQL_SEARCH			= "SELECT * FROM "+SQL_SCHEMA+".search(?,?,?)";
 		SQL_SEARCH_INTRO	= "SELECT * FROM "+SQL_SCHEMA+".search_intro(?,?,?)";
 		SQL_SEARCH_FULL		= "SELECT * FROM "+SQL_SCHEMA+".search_full(?,?,?)";
+		SQL_SET_PARAM		= "{? = call "+SQL_SCHEMA+".set_config(?,?)}";
 		
 		initializeSQLStatements();
 	}
 	
 	private void initializeSQLStatements() throws SQLException, ClassNotFoundException
 	{
-		addDocProc		= getConnection().prepareCall(SQL_ADD_DOCUMENT);
-		addQueryProc	= getConnection().prepareCall(SQL_ADD_QUERY);
-		addStopwordProc	= getConnection().prepareCall(SQL_ADD_STOPWORD);
-		clearProc		= getConnection().prepareCall(SQL_CLEAR);
-		delDocIDProc	= getConnection().prepareCall(SQL_DEL_DOC_ID);
-		delDocURIProc	= getConnection().prepareCall(SQL_DEL_DOC_URI);
-		simProc			= getConnection().prepareCall(SQL_SIM);
-		searchProc		= getConnection().prepareStatement(SQL_SEARCH);
-		searchIntroProc	= getConnection().prepareStatement(SQL_SEARCH_INTRO);
-		searchFullProc	= getConnection().prepareStatement(SQL_SEARCH_FULL);
+		addDocProc			= getConnection().prepareCall(SQL_ADD_DOCUMENT);
+		addQueryProc		= getConnection().prepareCall(SQL_ADD_QUERY);
+		addStopwordProc		= getConnection().prepareCall(SQL_ADD_STOPWORD);
+		delStopwordProc		= getConnection().prepareCall(SQL_DEL_STOPWORD);
+		clearStopwordProc	= getConnection().prepareCall(SQL_CLEAR_STOPWORD);
+		clearProc			= getConnection().prepareCall(SQL_CLEAR);
+		delDocIDProc		= getConnection().prepareCall(SQL_DEL_DOC_ID);
+		delDocURIProc		= getConnection().prepareCall(SQL_DEL_DOC_URI);
+		simProc				= getConnection().prepareCall(SQL_SIM);
+		searchProc			= getConnection().prepareStatement(SQL_SEARCH);
+		searchIntroProc		= getConnection().prepareStatement(SQL_SEARCH_INTRO);
+		searchFullProc		= getConnection().prepareStatement(SQL_SEARCH_FULL);
+		setParamProc		= getConnection().prepareCall(SQL_SET_PARAM);
 	}
 
 	@Override
@@ -188,5 +200,33 @@ public class Model extends DBConnection implements IModel
 		searchIntroProc.setInt(3, start);
 		
 		return searchIntroProc.executeQuery();
+	}
+
+	@Override
+	public void setParameter(String param, String value) throws SQLException
+	{
+		setParamProc.registerOutParameter(1, Types.INTEGER);
+		setParamProc.setString(2, param);
+		setParamProc.setString(3, value);
+		
+		setParamProc.execute();
+	}
+
+	@Override
+	public void clearStopwords() throws SQLException
+	{
+		clearStopwordProc.registerOutParameter(1, Types.INTEGER);
+		
+		clearStopwordProc.execute();
+	}
+
+	@Override
+	public int removeStopword(String word) throws SQLException
+	{
+		delStopwordProc.registerOutParameter(1, Types.INTEGER);
+		delStopwordProc.setString(2, word);
+		
+		delStopwordProc.execute();		
+		return delStopwordProc.getInt(1);
 	}
 }
