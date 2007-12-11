@@ -16,10 +16,6 @@
 --  You should have received a copy of the GNU Lesser General Public License
 --  along with this program.  If not, see <http://www.gnu.org/licenses/>
 
---
--- PostgreSQL database dump
---
-
 SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
@@ -1704,7 +1700,6 @@ CREATE TABLE imap (
 --
 
 CREATE SEQUENCE interpretation_id_seq
-    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1791,7 +1786,6 @@ CREATE TABLE map_type (
 --
 
 CREATE SEQUENCE term_id_seq
-    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1824,7 +1818,6 @@ CREATE TABLE tmap (
 --
 
 CREATE SEQUENCE topic_id_seq
-    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1977,6 +1970,66 @@ CREATE UNIQUE INDEX term_idx ON term USING btree (term);
 --
 
 CREATE UNIQUE INDEX term_idx1 ON term USING btree (name);
+
+
+--
+-- Name: imap_delete; Type: TRIGGER; Schema: etvsm_ontology; Owner: -
+--
+
+CREATE TRIGGER imap_delete
+    AFTER DELETE ON imap
+    FOR EACH ROW
+    EXECUTE PROCEDURE imap_delete_trigger();
+
+
+--
+-- Name: imap_insert; Type: TRIGGER; Schema: etvsm_ontology; Owner: -
+--
+
+CREATE TRIGGER imap_insert
+    AFTER INSERT ON imap
+    FOR EACH ROW
+    EXECUTE PROCEDURE imap_insert_trigger();
+
+
+--
+-- Name: map_delete; Type: TRIGGER; Schema: etvsm_ontology; Owner: -
+--
+
+CREATE TRIGGER map_delete
+    AFTER DELETE ON map
+    FOR EACH ROW
+    EXECUTE PROCEDURE map_delete_trigger();
+
+
+--
+-- Name: map_insert; Type: TRIGGER; Schema: etvsm_ontology; Owner: -
+--
+
+CREATE TRIGGER map_insert
+    AFTER INSERT ON map
+    FOR EACH ROW
+    EXECUTE PROCEDURE map_insert_trigger();
+
+
+--
+-- Name: topic_delete; Type: TRIGGER; Schema: etvsm_ontology; Owner: -
+--
+
+CREATE TRIGGER topic_delete
+    AFTER DELETE ON topic
+    FOR EACH ROW
+    EXECUTE PROCEDURE topic_delete_trigger();
+
+
+--
+-- Name: topic_insert; Type: TRIGGER; Schema: etvsm_ontology; Owner: -
+--
+
+CREATE TRIGGER topic_insert
+    AFTER INSERT ON topic
+    FOR EACH ROW
+    EXECUTE PROCEDURE topic_insert_trigger();
 
 
 --
