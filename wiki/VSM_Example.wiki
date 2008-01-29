@@ -1,0 +1,39 @@
+#labels VSM,example,Featured
+=VSM Example=
+
+{{{
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.themis.ir.VSM;
+import org.themis.util.LETTERCASE;
+import org.themis.util.PREPROCESS;
+import org.themis.util.STEMMER;
+
+
+public class TestVSM
+{
+	public static void main(String[] args) throws SQLException, ClassNotFoundException
+	{
+		VSM vsm = new VSM("localhost","themis","postgres","postgres");
+		
+		vsm.clear();
+		
+		vsm.setParameter(PREPROCESS.LETTERCASE.toString(), LETTERCASE.UPPER.toString());
+		vsm.setParameter(PREPROCESS.STEMMER.toString(), STEMMER.PORTER.toString());
+		
+		vsm.addStopword("a");
+		vsm.addStopword("the");
+		
+		vsm.addDocument("URL1", "a red car", false);
+		vsm.addDocument("URL2", "the red auto", false);
+		
+		ResultSet res = vsm.searchFull("red car", 0, 10);
+				
+		while (res.next())
+		{
+			System.out.println(res.getInt(1)+"\t|\t"+res.getFloat(3)+"\t|\t"+res.getString(4));
+		}
+	}
+}
+}}}
