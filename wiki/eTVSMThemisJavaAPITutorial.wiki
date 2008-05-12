@@ -77,8 +77,8 @@ etvsm.setParameter(PREPROCESS.STEMMER.toString(), STEMMER.NONE.toString());
 }}}
   # Add stopwords to use with eTVSM model:
 {{{
-vsm.addStopword("a");
-vsm.addStopword("the");
+etvsm.addStopword("a");
+etvsm.addStopword("the");
 }}}
   # Build eTVSM document models for documents "fast red car", "the ruby auto", and "fast motorcar". One should specify document URL to possess the original document reference. The _false_ flag symbols that document is not a query, and is intended for later retrieval:
 {{{ 
