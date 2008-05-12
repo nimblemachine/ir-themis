@@ -59,7 +59,16 @@ public class Model extends DBConnection implements IModel
 	private PreparedStatement searchFullProc	= null;
 	private CallableStatement setParamProc		= null;
 	
-	
+	/**
+	 * Constructor
+	 * @param SQL_SCHEMA SQL schema name
+	 * @param host Database host server
+	 * @param name Database name
+	 * @param user Database user
+	 * @param pwd User password
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 */
 	public Model(String SQL_SCHEMA, String host, String name, String user, String pwd) throws SQLException, ClassNotFoundException
 	{
 		setDBHost(host);
