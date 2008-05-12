@@ -1,4 +1,6 @@
 #labels eTVSM,Themis,java,API,tutorial,Featured
+=eTVSM Themis Java API tutorial=
+
 This tutorial shows how to write a java program that uses Themis Java API to connect to Themis backend and perform eTVSM document similarity judgments:
 
 {{{
@@ -28,22 +30,22 @@ public class TestETVSM
 		o.dumpWNSynsetMF("the ruby auto");
 		o.dumpWNSynsetMF("fast motorcar");
         
-        etvsm.setParameter(PREPROCESS.LETTERCASE.toString(), LETTERCASE.UPPER.toString());
-        etvsm.setParameter(PREPROCESS.STEMMER.toString(), STEMMER.NONE.toString());
+		etvsm.setParameter(PREPROCESS.LETTERCASE.toString(), LETTERCASE.UPPER.toString());
+		etvsm.setParameter(PREPROCESS.STEMMER.toString(), STEMMER.NONE.toString());
         
-        etvsm.addStopword("a");
-        etvsm.addStopword("the");
+		etvsm.addStopword("a");
+		etvsm.addStopword("the");
         
-        etvsm.addDocument("URL1", "fast red car", false);
-        etvsm.addDocument("URL2", "the ruby auto", false);
-        etvsm.addDocument("URL3", "fast motorcar", false);
+		etvsm.addDocument("URL1", "fast red car", false);
+		etvsm.addDocument("URL2", "the ruby auto", false);
+		etvsm.addDocument("URL3", "fast motorcar", false);
         
-        ResultSet res = etvsm.searchFull("red car", 0, 10);
+		ResultSet res = etvsm.searchFull("red car", 0, 10);
                         
-        while (res.next())
-        {
-                System.out.println(res.getInt(1)+"\t|\t"+res.getFloat(3)+"\t|\t"+res.getString(4));
-        }
+		while (res.next())
+		{
+                	System.out.println(res.getInt(1)+"\t|\t"+res.getFloat(3)+"\t|\t"+res.getString(4));
+		}
 	}
 }
 }}}
