@@ -60,7 +60,7 @@ vsm.setParameter(PREPROCESS.STEMMER.toString(), STEMMER.PORTER.toString());
 vsm.addStopword("a");
 vsm.addStopword("the");
 }}}
-  # Build VSM document models for documents "a red car" and "the red auto". One should specify document URL to possess the original document reference. The false flag symbols that document is not a query, and is intended for later retrieval:
+  # Build VSM document models for documents "a red car" and "the red auto". One should specify document URL to possess the original document reference. The _false_ flag symbols that document is not a query, and is intended for later retrieval:
 {{{ 
 vsm.addDocument("URL1", "a red car", false);
 vsm.addDocument("URL2", "the red auto", false);
