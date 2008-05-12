@@ -1,0 +1,78 @@
+#labels VSM,Themis,java,API,tutorial,Featured
+=VSM Themis Java API tutorial=
+
+This tutorial shows how to write a java program that uses Themis Java API to connect to Themis backend and perform VSM document similarity judgments:
+
+{{{
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.themis.ir.VSM;
+import org.themis.util.LETTERCASE;
+import org.themis.util.PREPROCESS;
+import org.themis.util.STEMMER;
+
+
+public class TestVSM
+{
+	public static void main(String[] args) throws SQLException, ClassNotFoundException
+	{
+		VSM vsm = new VSM("localhost","themis","postgres","postgres");
+		
+		vsm.clear();
+		
+		vsm.setParameter(PREPROCESS.LETTERCASE.toString(), LETTERCASE.UPPER.toString());
+		vsm.setParameter(PREPROCESS.STEMMER.toString(), STEMMER.PORTER.toString());
+		
+		vsm.addStopword("a");
+		vsm.addStopword("the");
+		
+		vsm.addDocument("URL1", "a red car", false);
+		vsm.addDocument("URL2", "the red auto", false);
+		
+		ResultSet res = vsm.searchFull("red car", 0, 10);
+				
+		while (res.next())
+		{
+			System.out.println(res.getInt(1)+"\t|\t"+res.getFloat(3)+"\t|\t"+res.getString(4));
+		}
+	}
+}
+}}}
+
+Let us investigate proposed code extract line by line:
+
+  # First we create a VSM object - _vsm_ that connects to the Themis backend (we connect to the database "themis" at "localhost"; username and password are both "postgres"):
+{{{
+VSM vsm = new VSM("localhost","themis","postgres","postgres");
+}}}
+  # Then we clear the VSM IR model (remove all VSM document models). Note, VSM model configuration stays unchanged:
+{{{
+vsm.clear();
+}}}
+  # Configure VSM model by setting: all the words in the documents to be treated as uppercase (letter casing does not influence similarity judgments) and usage of Porter stemmer when deriving VSM document similarity judgments:
+{{{
+vsm.setParameter(PREPROCESS.LETTERCASE.toString(), LETTERCASE.UPPER.toString());
+vsm.setParameter(PREPROCESS.STEMMER.toString(), STEMMER.PORTER.toString());
+}}}
+  # Add stopwords to use with VSM model:
+{{{
+vsm.addStopword("a");
+vsm.addStopword("the");
+}}}
+  # Build VSM document models for documents "a red car" and "the red auto". One should specify document URL to possess the original document reference. The false flag symbols that document is not a query, and is intended for later retrieval:
+{{{ 
+vsm.addDocument("URL1", "a red car", false);
+vsm.addDocument("URL2", "the red auto", false);
+}}}
+  # Perform the VSM document search for the query "red car". Second and third arguments specify retrieved documents interval (start from 0 most relevant document and retrieve 10 documents):
+{{{
+ResultSet res = vsm.searchFull("red car", 0, 10);
+}}}
+  # The last chunk of code outputs retrieved results to the console. If you did everything right you should see the output:
+{{{
+1	|	1.0	|	a red car
+2	|	0.5	|	the red auto
+}}}
+
+The output means that the document "a red car" was retrieves as the most relevant document  to the search query with the VSM similarity level of 1.0. The document "the red auto" is the second most relevant document with the similarity level of 0.5.
