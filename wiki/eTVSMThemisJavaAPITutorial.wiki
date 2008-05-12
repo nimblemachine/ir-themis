@@ -52,7 +52,7 @@ public class TestETVSM
 
 Expected console output:
 {{{
-2	|	1.0	|	the ruby auto
+2	|	1.0		|	the ruby auto
 1	|	0.816497	|	fast red car
-3	|	0.5	|	fast motorcar
+3	|	0.5		|	fast motorcar
 }}}
