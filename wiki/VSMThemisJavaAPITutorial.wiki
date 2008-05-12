@@ -75,4 +75,4 @@ ResultSet res = vsm.searchFull("red car", 0, 10);
 2	|	0.5	|	the red auto
 }}}
 
-The output means that the document "a red car" was retrieves as the most relevant document  to the search query with the VSM similarity level of 1.0. The document "the red auto" is the second most relevant document with the similarity level of 0.5.
+The output means that the document "a red car" was retrieved as the most relevant document  to the search query with the VSM similarity level of 1.0. The document "the red auto" is the second most relevant document with the similarity level of 0.5.
