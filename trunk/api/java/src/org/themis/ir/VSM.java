@@ -24,6 +24,15 @@ import org.themis.util.*;
 
 public class VSM extends Model
 {
+	/**
+	 * Constructor
+	 * @param host Database host server
+	 * @param name Database name
+	 * @param user Database user
+	 * @param pwd User password
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 */
 	public VSM(String host, String name, String user, String pwd) throws SQLException, ClassNotFoundException
 	{
 		super(IRMODEL.VSM.toString(), host, name, user, pwd);
