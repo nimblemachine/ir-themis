@@ -24,6 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.themis.DBConnection;
 
@@ -43,6 +45,8 @@ public class Model extends DBConnection implements IModel
 	private final String SQL_SEARCH_INTRO;
 	private final String SQL_SEARCH_FULL;
 	private final String SQL_SET_PARAM;
+	private final String SQL_GET_DOCUMENT_N;
+	private final String SQL_GET_DOCUMENTS;
 	
 	// callable statements
 	private CallableStatement addDocProc		= null;
@@ -58,6 +62,8 @@ public class Model extends DBConnection implements IModel
 	private PreparedStatement searchIntroProc	= null;
 	private PreparedStatement searchFullProc	= null;
 	private CallableStatement setParamProc		= null;
+	private PreparedStatement getDocumentN		= null;
+	private PreparedStatement getDocuments		= null;
 	
 	/**
 	 * Constructor
@@ -89,6 +95,8 @@ public class Model extends DBConnection implements IModel
 		SQL_SEARCH_INTRO	= "SELECT * FROM "+SQL_SCHEMA+".search_intro(?,?,?)";
 		SQL_SEARCH_FULL		= "SELECT * FROM "+SQL_SCHEMA+".search_full(?,?,?)";
 		SQL_SET_PARAM		= "{? = call "+SQL_SCHEMA+".set_config(?,?)}";
+		SQL_GET_DOCUMENT_N	= "SELECT count(*) FROM "+SQL_SCHEMA+".document WHERE is_query=false";
+		SQL_GET_DOCUMENTS	= "SELECT * FROM "+SQL_SCHEMA+".document WHERE is_query=false ORDER BY id ASC LIMIT ? OFFSET ?";
 		
 		initializeSQLStatements();
 	}
@@ -108,6 +116,8 @@ public class Model extends DBConnection implements IModel
 		searchIntroProc		= getConnection().prepareStatement(SQL_SEARCH_INTRO);
 		searchFullProc		= getConnection().prepareStatement(SQL_SEARCH_FULL);
 		setParamProc		= getConnection().prepareCall(SQL_SET_PARAM);
+		getDocumentN		= getConnection().prepareStatement(SQL_GET_DOCUMENT_N);
+		getDocuments		= getConnection().prepareStatement(SQL_GET_DOCUMENTS);
 	}
 
 	@Override
@@ -182,33 +192,60 @@ public class Model extends DBConnection implements IModel
 	}
 
 	@Override
-	public ResultSet search(String query, int start, int n) throws SQLException
+	public List<Document> search(String query, int start, int n) throws SQLException
 	{
 		searchProc.setString(1, query);
 		searchProc.setInt(2, n);
 		searchProc.setInt(3, start);
 		
-		return searchProc.executeQuery();
+		ResultSet res = searchProc.executeQuery();
+		List<Document> result = new ArrayList<Document>();
+		
+		while (res.next())
+		{
+			Document sdoc = new Document(res.getInt(1),res.getString(2),null,false,null, res.getDouble(3));
+			result.add(sdoc);
+		}
+		
+		return result;
 	}
 
 	@Override
-	public ResultSet searchFull(String query, int start, int n) throws SQLException
+	public List<Document> searchFull(String query, int start, int n) throws SQLException
 	{
 		searchFullProc.setString(1, query);
 		searchFullProc.setInt(2, n);
 		searchFullProc.setInt(3, start);
 		
-		return searchFullProc.executeQuery();
+		ResultSet res = searchFullProc.executeQuery();
+		List<Document> result = new ArrayList<Document>();
+		
+		while (res.next())
+		{
+			Document doc = new Document(res.getInt(1),res.getString(2),res.getString(4),false,null, res.getDouble(3));
+			result.add(doc);
+		}
+		
+		return result;
 	}
 
 	@Override
-	public ResultSet searchIntro(String query, int start, int n) throws SQLException
+	public List<Document> searchIntro(String query, int start, int n) throws SQLException
 	{
 		searchIntroProc.setString(1, query);
 		searchIntroProc.setInt(2, n);
 		searchIntroProc.setInt(3, start);
 		
-		return searchIntroProc.executeQuery();
+		ResultSet res = searchIntroProc.executeQuery();
+		List<Document> result = new ArrayList<Document>();
+		
+		while (res.next())
+		{
+			Document doc = new Document(res.getInt(1),res.getString(2),res.getString(4),false,null, res.getDouble(3));
+			result.add(doc);
+		}
+		
+		return result;
 	}
 
 	@Override
@@ -237,5 +274,43 @@ public class Model extends DBConnection implements IModel
 		
 		delStopwordProc.execute();		
 		return delStopwordProc.getInt(1);
+	}
+
+	@Override
+	public Document getDocument(int offset) throws SQLException {
+		List<Document> docs = getDocuments(offset, 1);
+		
+		if (docs.size()<=0) return null;
+		
+		return docs.get(0);
+	}
+
+	@Override
+	public List<Document> getDocuments(int offset, int limit) throws SQLException {
+		getDocuments.setInt(1, limit);
+		getDocuments.setInt(2, offset);
+		
+		ResultSet res = getDocuments.executeQuery();
+		
+		List<Document> result = new ArrayList<Document>();
+		
+		while (res.next())
+		{
+			Document doc = new Document(res.getInt(1),res.getString(2),res.getString(3),res.getBoolean(4),res.getDate(5));
+			result.add(doc);
+		}
+		
+		return result;	
+	}
+
+	@Override
+	public int getNumberOfDocuments() throws SQLException
+	{
+		ResultSet res = getDocumentN.executeQuery();
+		
+		if (res.next())
+			return res.getInt(1);
+		
+		return 0;
 	}
 }
