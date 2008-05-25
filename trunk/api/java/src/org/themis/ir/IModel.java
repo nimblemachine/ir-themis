@@ -19,8 +19,9 @@
  */
 package org.themis.ir;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+
 
 public interface IModel
 {
@@ -113,7 +114,7 @@ public interface IModel
 	 * @return Search results (DocID, URI, similarity)
 	 * @throws SQLException
 	 */
-	public abstract ResultSet search(String query, int start, int n) throws SQLException;
+	public abstract List<Document> search(String query, int start, int n) throws SQLException;
 	
 	/**
 	 * Search for similar documents. Return documents intros.
@@ -124,7 +125,7 @@ public interface IModel
 	 * @return Search results (DocID, URI, similarity, First 256 characters of document text)
 	 * @throws SQLException
 	 */
-	public abstract ResultSet searchIntro(String query, int start, int n) throws SQLException;
+	public abstract List<Document> searchIntro(String query, int start, int n) throws SQLException;
 	
 	/**
 	 * Search for similar documents. Return complete documents.
@@ -135,7 +136,7 @@ public interface IModel
 	 * @return Search results (DocID, URI, similarity, Full document text)
 	 * @throws SQLException
 	 */
-	public abstract ResultSet searchFull(String query, int start, int n) throws SQLException;
+	public abstract List<Document> searchFull(String query, int start, int n) throws SQLException;
 	
 	/**
 	 * Set model configuration parameter
@@ -144,4 +145,28 @@ public interface IModel
 	 * @throws SQLException
 	 */
 	public abstract void setParameter(String param, String value) throws SQLException;
+	
+	/**
+	 * Get number of documents crawled by the model
+	 * @return Number of documents
+	 * @throws SQLException
+	 */
+	public abstract int getNumberOfDocuments() throws SQLException;
+	
+	/**
+	 * Get range of documents crawled by the model
+	 * @param offset Start from document at position 'offset' (start from position 0)
+	 * @param limit Get 'limit' number of documents
+	 * @return List of documents in the requested interval
+	 * @throws SQLException
+	 */
+	public abstract List<Document> getDocuments(int offset, int limit) throws SQLException;
+	
+	/**
+	 * Get document crawled by the model
+	 * @param offset Document position (start from position 0)
+	 * @return Document at requested position, null if there is no such document
+	 * @throws SQLException
+	 */
+	public abstract Document getDocument(int offset) throws SQLException;
 }
