@@ -4,11 +4,13 @@
 This tutorial shows how to write a java program that uses Themis Java API to connect to Themis backend and perform eTVSM document similarity judgments:
 
 {{{
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 
-import org.themis.ir.eTVSM;
-import org.themis.ir.eTVSMOntology;
+import org.themis.ir.Document;
+import org.themis.ir.etvsm.eTVSM;
+import org.themis.ir.etvsm.eTVSMOntology;
 import org.themis.util.LETTERCASE;
 import org.themis.util.PREPROCESS;
 import org.themis.util.STEMMER;
@@ -40,11 +42,13 @@ public class TestETVSM
 		etvsm.addDocument("URL2", "the ruby auto", false);
 		etvsm.addDocument("URL3", "fast motorcar", false);
         
-		ResultSet res = etvsm.searchFull("red car", 0, 10);
-                        
-		while (res.next())
+		List<Document> res = etvsm.searchFull("red car", 0, 10);
+		Iterator<Document> i = res.iterator();
+        
+		while (i.hasNext())
 		{
-                	System.out.println(res.getInt(1)+"\t|\t"+res.getFloat(3)+"\t|\t"+res.getString(4));
+			Document doc = i.next();
+			System.out.println(String.format("%1s \t | \t %1.4f \t | \t %3s", doc.getId(), doc.getSimilarity(), doc.getContent()));
 		}
 	}
 }
@@ -88,7 +92,7 @@ etvsm.addDocument("URL3", "fast motorcar", false);
 }}}
   # Perform the eTVSM document search for the query "red car". Second and third arguments specify retrieved documents interval (start from 0 most relevant document and retrieve 10 documents):
 {{{
-ResultSet res = etvsm.searchFull("red car", 0, 10);
+List<Document> res = etvsm.searchFull("red car", 0, 10);
 }}}
   # The last chunk of code outputs retrieved results to the console. If you did everything right you should see the output:
 {{{
