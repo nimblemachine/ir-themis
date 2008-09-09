@@ -4,10 +4,12 @@
 This tutorial shows how to write a java program that uses Themis Java API to connect to Themis backend and perform VSM document similarity judgments:
 
 {{{
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 
-import org.themis.ir.VSM;
+import org.themis.ir.Document;
+import org.themis.ir.vsm.VSM;
 import org.themis.util.LETTERCASE;
 import org.themis.util.PREPROCESS;
 import org.themis.util.STEMMER;
@@ -20,21 +22,23 @@ public class TestVSM
 		VSM vsm = new VSM("localhost","themis","postgres","postgres");
 		
 		vsm.clear();
-		
+                
 		vsm.setParameter(PREPROCESS.LETTERCASE.toString(), LETTERCASE.UPPER.toString());
 		vsm.setParameter(PREPROCESS.STEMMER.toString(), STEMMER.PORTER.toString());
-		
+                
 		vsm.addStopword("a");
 		vsm.addStopword("the");
-		
+                
 		vsm.addDocument("URL1", "a red car", false);
 		vsm.addDocument("URL2", "the red auto", false);
-		
-		ResultSet res = vsm.searchFull("red car", 0, 10);
-				
-		while (res.next())
+                
+		List<Document> res = vsm.searchFull("red car", 0, 10);
+		Iterator<Document> i = res.iterator();
+                
+		while (i.hasNext())
 		{
-			System.out.println(res.getInt(1)+"\t|\t"+res.getFloat(3)+"\t|\t"+res.getString(4));
+			Document doc = i.next();
+			System.out.println(String.format("%1s \t | \t %1.4f \t | \t %3s", doc.getId(), doc.getSimilarity(), doc.getContent()));
 		}
 	}
 }
@@ -67,7 +71,7 @@ vsm.addDocument("URL2", "the red auto", false);
 }}}
   # Perform the VSM document search for the query "red car". Second and third arguments specify retrieved documents interval (start from 0 most relevant document and retrieve 10 documents):
 {{{
-ResultSet res = vsm.searchFull("red car", 0, 10);
+List<Document> res = vsm.searchFull("red car", 0, 10);
 }}}
   # The last chunk of code outputs retrieved results to the console. If you did everything right you should see the output:
 {{{
